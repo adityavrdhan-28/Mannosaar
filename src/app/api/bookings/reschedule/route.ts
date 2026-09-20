@@ -44,6 +44,10 @@ export async function POST(request: Request) {
       );
     }
 
+    if (booking.booking_source === 'WHATSAPP') {
+      return NextResponse.json({ error: 'Manage this booking through WhatsApp or the WhatsApp operations dashboard.' }, { status: 409 });
+    }
+
     // Verify ownership
     if (booking.user_id !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

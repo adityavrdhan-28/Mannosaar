@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendBookingConfirmationEmail } from '@/lib/email';
 import { getTherapistNotificationRecipients } from '@/lib/therapist-email';
-import { createClient } from '@/lib/supabase/server';
+import { db } from '@/lib/whatsapp/server';
+import { auth } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +15,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
+    const session = await auth();
+    if (!session?.user?.id) return new Response('Unauthorized', { status: 401 });
+    const supabase = db();
 
     // Fetch booking details with slot and user info
     const { data: bookingData, error: bookingError } = await supabase
@@ -38,6 +41,9 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
+
+    const { data: actor } = await supabase.from('users').select('role').eq('id', session.user.id).single();
+    if (booking.user.id !== session.user.id && actor?.role !== 'admin') return new Response('Forbidden', { status: 403 });
 
     // Fetch therapist details
     const { data: therapist, error: therapistError } = await supabase

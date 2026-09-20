@@ -1,11 +1,14 @@
 'use client';
 
 const WhatsAppButton = () => {
-  const whatsappLink = 'https://wa.me/1234567890?text=Hello%20Mannosaar%20Therapy';
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, '');
+  if (!phone || !/^\d{7,15}$/.test(phone)) return null;
+  const whatsappLink = `https://wa.me/${phone}?text=${encodeURIComponent("Hi, I'd like to book a session.")}`;
 
   return (
     <a
       href={whatsappLink}
+      aria-label="Book on WhatsApp"
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-8 right-8 z-40 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-2xl transition-shadow group"
@@ -28,7 +31,7 @@ const WhatsAppButton = () => {
 
       {/* Tooltip */}
       <div className="absolute bottom-full right-0 mb-3 px-3 py-1 bg-gray-800 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        Chat with us
+        Book on WhatsApp
       </div>
     </a>
   );

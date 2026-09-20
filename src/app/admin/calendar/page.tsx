@@ -1,3 +1,4 @@
+import { therapistSlotIds } from '@/lib/bookings/access';
 import { auth } from '@/lib/auth';
 import { createClient } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
@@ -38,18 +39,20 @@ async function assertAdminAccess() {
     redirect('/');
   }
 
-  return supabase;
+  return { supabase, role: user?.role, userId: session.user!.id! };
 }
 
 export default async function AdminCalendarPage() {
-  const supabase = await assertAdminAccess();
+  const { supabase, role, userId } = await assertAdminAccess();
 
-  const { data: bookings } = await supabase
+  let query = supabase
     .from('bookings')
     .select('id, user_name, session_type, slot_date, slot_start_time, slot_end_time, status')
     .not('slot_date', 'is', null)
     .order('slot_date', { ascending: true })
     .order('slot_start_time', { ascending: true });
+  if (role === 'therapist') query = query.in('slot_id', await therapistSlotIds(userId));
+  const { data: bookings } = await query;
 
   const upcomingBookings = ((bookings as Booking[] | null) || []).filter((booking) => {
     if (!booking.slot_date) return false;

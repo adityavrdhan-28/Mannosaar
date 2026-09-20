@@ -1,3 +1,4 @@
+import { protectToken, revealToken } from './google-calendar/token-protection';
 import { createClient } from '@supabase/supabase-js';
 
 async function getTherapistGoogleCredentials(therapistId: string) {
@@ -105,7 +106,7 @@ async function getOrRefreshAccessToken(credentials: any) {
 
   // If token is still valid, return it
   if (credentials.token_expiry && new Date(credentials.token_expiry) > now) {
-    return credentials.access_token;
+    return revealToken(credentials.access_token);
   }
 
   // Otherwise refresh it
@@ -115,7 +116,7 @@ async function getOrRefreshAccessToken(credentials: any) {
     body: new URLSearchParams({
       client_id: process.env.GOOGLE_CLIENT_ID!,
       client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-      refresh_token: credentials.refresh_token,
+      refresh_token: revealToken(credentials.refresh_token),
       grant_type: 'refresh_token',
     }).toString(),
   });
@@ -138,7 +139,7 @@ async function getOrRefreshAccessToken(credentials: any) {
   await supabase
     .from('google_oauth_credentials')
     .update({
-      access_token: tokenData.access_token,
+      access_token: protectToken(tokenData.access_token),
       token_expiry: expiryTime.toISOString(),
     })
     .eq('user_id', credentials.user_id);

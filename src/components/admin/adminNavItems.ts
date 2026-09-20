@@ -22,6 +22,7 @@ export const adminNavItems: AdminNavItem[] = [
   { label: 'Calendar', href: '/admin/calendar', icon: Calendar },
   { label: 'Clients', href: '/admin/users', icon: Users },
   { label: 'Slots', href: '/admin/slots', icon: Clock3 },
+  { label: 'WhatsApp', href: '/admin/whatsapp', icon: CalendarDays },
   { label: 'Payments', href: '/admin/payments', icon: CreditCard },
   { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { label: 'Settings', href: '/admin/settings', icon: Settings },

@@ -15,11 +15,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Booking ID required' }, { status: 400 });
     }
 
-    // Fetch booking by ID only (no user_id filter)
-    // This works because:
-    // 1. BookingId is randomly generated (hard to guess)
-    // 2. It's only used right after payment verification
-    // 3. User came from their own payment page with their own email
+    if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -49,8 +46,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log('Booking found:', booking.id, 'User email:', booking.user_email, 'Meeting link:', booking.meeting_link, 'Meeting links:', booking.meeting_links);
-    
+    const { data: actor } = await supabase.from('users').select('role').eq('id', session.user.id).single();
+    if (booking.user_id !== session.user.id && actor?.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     // Convert snake_case session_dates back to camelCase for frontend
     let sessionDates = undefined;
     if (booking.session_dates && Array.isArray(booking.session_dates)) {

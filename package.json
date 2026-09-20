@@ -13,7 +13,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src",
-    "test:email": "node --env-file=.env.local scripts/test-email.mjs"
+    "test:email": "node --env-file=.env.local scripts/test-email.mjs",
+    "test:whatsapp": "node --test tests/whatsapp/*.test.cjs tests/whatsapp/*.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.4.0",
@@ -47,6 +48,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.23",

@@ -1,3 +1,6 @@
+import { equalSecret } from '@/lib/whatsapp/core';
+import { protectToken } from '@/lib/google-calendar/token-protection';
+import { isWhatsAppAdmin } from '@/lib/whatsapp/admin';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { createClient } from '@supabase/supabase-js';
@@ -38,6 +41,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    if (!await isWhatsAppAdmin() || !equalSecret(searchParams.get('state') || '', request.cookies.get('google_oauth_state')?.value || '')) {
+      return new Response('Invalid OAuth state', { status: 403 });
+    }
+
     // Exchange code for tokens
     const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
       method: 'POST',
@@ -60,6 +67,7 @@ export async function GET(request: NextRequest) {
     }
 
     const tokens = await tokenResponse.json();
+    if (!tokens.access_token || !tokens.refresh_token) throw new Error('GOOGLE_OFFLINE_CONSENT_REQUIRED');
 
     // Get user information to get their email
     const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
@@ -87,8 +95,8 @@ export async function GET(request: NextRequest) {
       .upsert(
         {
           user_id: session.user.id,
-          access_token: tokens.access_token,
-          refresh_token: tokens.refresh_token,
+          access_token: protectToken(tokens.access_token),
+          refresh_token: protectToken(tokens.refresh_token),
           token_expiry: expiryTime.toISOString(),
           email: userInfo.email,
         },
@@ -104,9 +112,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.redirect(
-      new URL(`/admin?success=Google account connected successfully with ${userInfo.email}`, request.url)
-    );
+    const response = NextResponse.redirect(new URL('/admin?success=Google%20account%20connected', request.url));
+    response.cookies.delete('google_oauth_state');
+    return response;
   } catch (error) {
     console.error('Google OAuth callback error:', error);
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';

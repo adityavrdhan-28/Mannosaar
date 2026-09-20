@@ -36,6 +36,8 @@ export async function POST(request: Request) {
       );
     }
 
+    if (userId !== session.user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     // Validate either slotId (single) or sessionDates (bundle) is provided
     if (!isBundleBooking && !slotId) {
       console.error('❌ Missing slotId for single booking');

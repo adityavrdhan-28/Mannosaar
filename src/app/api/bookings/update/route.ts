@@ -58,6 +58,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (booking.booking_source === 'WHATSAPP') {
+      return NextResponse.json({ error: 'Manage this booking through WhatsApp or the WhatsApp operations dashboard.' }, { status: 409 });
+    }
+
     // Get old slot details for email
     const { data: oldSlot } = await supabase
       .from('therapy_slots')

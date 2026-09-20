@@ -1,3 +1,4 @@
+import { therapistSlotIds } from '@/lib/bookings/access';
 import { auth } from '@/lib/auth';
 import { createClient } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
@@ -39,16 +40,18 @@ async function assertAdminAccess() {
     redirect('/');
   }
 
-  return supabase;
+  return { supabase, role: user?.role, userId: session.user!.id! };
 }
 
 export default async function AdminPaymentsPage() {
-  const supabase = await assertAdminAccess();
+  const { supabase, role, userId } = await assertAdminAccess();
 
-  const { data: bookings } = await supabase
+  let query = supabase
     .from('bookings')
     .select('id, user_name, user_email, session_type, slot_date, payment_status, payment_id, number_of_sessions')
     .order('created_at', { ascending: false });
+  if (role === 'therapist') query = query.in('slot_id', await therapistSlotIds(userId));
+  const { data: bookings } = await query;
 
   const paymentRows = ((bookings as BookingPayment[] | null) || []).slice(0, 50);
   const pendingCount = paymentRows.filter((booking) => (booking.payment_status || 'pending') === 'pending').length;

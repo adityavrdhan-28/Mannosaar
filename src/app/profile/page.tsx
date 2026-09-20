@@ -231,75 +231,9 @@ const ProfilePage = () => {
         setLoading(true);
         setError(null);
         
-        // Try to fetch user, if not found create them
-        const userResult = await supabase
-          .from('users')
-          .select('id')
-          .eq('email', session.user.email)
-          .maybeSingle();
-        let userData = userResult.data;
-        const userError = userResult.error;
-
-        // If user doesn't exist (no data returned), create them
-        if (!userData && !userError) {
-          console.log('Creating user:', session.user.email);
-          const { data: newUser, error: createError } = await supabase
-            .from('users')
-            .insert([
-              {
-                email: session.user.email,
-                name: session.user.name || '',
-                role: 'user',
-                phone_number: null,
-              },
-            ])
-            .select('id')
-            .single();
-
-          if (createError) {
-            console.error('Error creating user - Full error:', JSON.stringify(createError, null, 2));
-            console.error('Error code:', createError.code);
-            console.error('Error message:', createError.message);
-            
-            // Try creating user with minimal fields if the above fails
-            if (createError.code === '23502' || createError.message?.includes('phone_number')) {
-              console.log('Retrying without phone_number column...');
-              const { data: minimalUser, error: retryError } = await supabase
-                .from('users')
-                .insert([
-                  {
-                    email: session.user.email,
-                    name: session.user.name || '',
-                    role: 'user',
-                  },
-                ])
-                .select('id')
-                .single();
-
-              if (retryError) {
-                console.error('Retry failed:', JSON.stringify(retryError, null, 2));
-                setError('Could not create user profile. Please check Supabase database permissions.');
-                setLoading(false);
-                return;
-              }
-              
-              userData = minimalUser;
-            } else {
-              setError('Could not create user profile. Please check Supabase database.');
-              setLoading(false);
-              return;
-            }
-          } else if (newUser) {
-            userData = newUser;
-          }
-        }
-
-        if (userError || !userData) {
-          console.error('User fetch error:', userError);
-          setError('Could not load your profile. Please refresh and try again.');
-          setLoading(false);
-          return;
-        }
+        // NextAuth resolves or creates the database identity on the server.
+        const userData = { id: session.user.id };
+        if (!userData.id) throw new Error('Session identity is unavailable');
 
         const today = new Date();
         const dateString = today.toISOString().split('T')[0];

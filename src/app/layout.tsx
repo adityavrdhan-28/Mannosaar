@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Suspense } from "react";
 import "./globals.css";
+import WhatsAppButton from "@/components/shared/WhatsAppButton";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { Providers } from "@/components/Providers";
@@ -73,6 +74,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
+          <WhatsAppButton />
         </Providers>
       </body>
     </html>

@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         id,
         name,
         email,
-        phone,
+        phone_number,
         created_at,
         bookings:bookings(count)
       `)
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       id: user.id,
       name: user.name,
       email: user.email,
-      phone: user.phone,
+      phone: user.phone_number,
       total_sessions: user.bookings?.[0]?.count || 0,
       created_at: user.created_at,
     }));

@@ -1,3 +1,4 @@
+import { therapistSlotIds } from '@/lib/bookings/access';
 import { auth } from '@/lib/auth';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
@@ -48,6 +49,8 @@ export async function GET(request: Request) {
       }
       console.log('👨‍💼 Admin/Therapist role - showing all client bookings');
     }
+
+    if (userData.role === 'therapist') query = query.in('slot_id', await therapistSlotIds(userData.id));
 
     const { data: bookings, error: bookingsError } = await query;
 

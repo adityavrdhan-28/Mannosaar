@@ -112,7 +112,6 @@ export function getPayUConfig() {
   const salt =
     process.env.PAYU_SALT ||
     process.env.PAYU_MERCHANT_SALT ||
-    process.env.NEXT_PUBLIC_PAYU_SALT ||
     '';
   const paymentUrl = process.env.PAYU_PAYMENT_URL || process.env.PAYU_BASE_URL || 'https://secure.payu.in/_payment';
 
@@ -412,7 +411,15 @@ export function buildPayUResponseHash(params: {
 
 export async function verifyPayUPayment(txnid: string): Promise<PayUVerifyPaymentResult> {
   try {
-    const raw = await getPayUClient().verifyPayment(txnid);
+    const { key, salt } = getPayUConfig();
+    if (!key || !salt) throw new Error('PAYU_CONFIG_MISSING');
+    const response = await fetch(getPayUVerifyPaymentUrl(), {
+      method: 'POST', signal: AbortSignal.timeout(12000),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ key, command: 'verify_payment', var1: txnid, hash: buildPayUVerifyPaymentHash({ key, salt, txnid }) }),
+    });
+    if (!response.ok) throw new Error('PAYU_VERIFICATION_UNAVAILABLE');
+    const raw = await response.json();
     const rawRecord = toRecord(raw);
     const detailsContainer = toRecord(rawRecord?.transaction_details);
     const transaction = toRecord(detailsContainer?.[txnid]);
