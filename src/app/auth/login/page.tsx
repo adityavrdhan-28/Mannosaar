@@ -13,9 +13,13 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
     try {
-      // Use callback URL to redirect to appointment page after signin
+      const requestedCallback = new URLSearchParams(window.location.search).get('callbackUrl');
+      const callbackUrl = requestedCallback?.startsWith('/') && !requestedCallback.startsWith('//')
+        ? requestedCallback
+        : '/appointment/type';
+
       await signIn('google', { 
-        callbackUrl: '/appointment/type',
+        callbackUrl,
         redirect: true 
       });
     } catch (err) {

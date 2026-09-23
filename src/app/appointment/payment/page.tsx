@@ -6,6 +6,10 @@ import { useEffect, useState, Suspense } from 'react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
+import {
+  DEFAULT_BUNDLE_PRICING,
+  type BundlePricing,
+} from '@/lib/services';
 import PaymentAgreement from '@/components/booking/PaymentAgreement';
 
 interface SlotInfo {
@@ -127,14 +131,7 @@ function PaymentPageContent() {
   const [slotInfo, setSlotInfo] = useState<SlotInfo | null>(null);
   const [cachedSlotInfo, setCachedSlotInfo] = useState<SlotInfo | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [prices, setPrices] = useState({
-    personal_1: 2500,
-    personal_2: 4500,
-    personal_3: 6000,
-    couple_1: 3500,
-    couple_2: 6500,
-    couple_3: 9000,
-  });
+  const [prices, setPrices] = useState<BundlePricing>({ ...DEFAULT_BUNDLE_PRICING });
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [processingMode, setProcessingMode] = useState<'payu' | 'test' | null>(null);

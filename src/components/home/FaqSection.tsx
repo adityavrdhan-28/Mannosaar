@@ -79,7 +79,7 @@ const FaqSection = () => (
         ))}
       </div>
 
-      <p className="mt-8 text-sm text-[#4c4052]">Still unsure? <Link href="/appointment/type" className="font-bold text-[#5b267a] underline decoration-[#5b267a]/35 underline-offset-4 hover:text-[#3f165b]">Book a session</Link> and begin with one conversation.</p>
+      <p className="mt-8 text-sm text-[#4c4052]">Still unsure? <Link href="/book-session" className="font-bold text-[#5b267a] underline decoration-[#5b267a]/35 underline-offset-4 hover:text-[#3f165b]">Book a session</Link> and begin with one conversation.</p>
     </div>
   </section>
 );

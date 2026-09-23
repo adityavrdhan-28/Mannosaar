@@ -6,6 +6,10 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { format } from 'date-fns';
 import { createClient } from '@/lib/supabase/client';
+import {
+  DEFAULT_BUNDLE_PRICING,
+  type BundlePricing,
+} from '@/lib/services';
 
 interface SlotInfo {
   id: string;
@@ -52,14 +56,7 @@ const BookingConfirmation = () => {
   const bundle = searchParams.get('bundle') ? parseInt(searchParams.get('bundle')!) : null;
 
   // Price state - now supports bundle pricing
-  const [prices, setPrices] = useState({
-    personal_1: 2500,
-    personal_2: 4500,
-    personal_3: 6000,
-    couple_1: 3500,
-    couple_2: 6500,
-    couple_3: 9000,
-  });
+  const [prices, setPrices] = useState<BundlePricing>({ ...DEFAULT_BUNDLE_PRICING });
 
   const [slotInfo, setSlotInfo] = useState<SlotInfo | null>(null);
   const [cachedSlotInfo, setCachedSlotInfo] = useState<SlotInfo | null>(null);

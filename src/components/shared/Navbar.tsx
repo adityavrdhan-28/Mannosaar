@@ -69,12 +69,18 @@ const Navbar = ({ onLogout }: NavbarProps) => {
           </Link>
 
           {/* Navigation Links - Center (Desktop Only) */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-8">
             <Link
               href="/"
               className="text-[#34213f] hover:text-[#34213f]/70 transition-colors font-medium text-sm"
             >
               Home
+            </Link>
+            <Link
+              href="/services"
+              className="text-[#34213f] hover:text-[#34213f]/70 transition-colors font-medium text-sm"
+            >
+              Services
             </Link>
             <Link
               href="/about"
@@ -98,10 +104,16 @@ const Navbar = ({ onLogout }: NavbarProps) => {
 
           {/* User Section - Right */}
           <div ref={mobileMenuRef} className="flex items-center gap-4" suppressHydrationWarning>
+            <Link
+              href="/book-session"
+              className="hidden min-h-11 items-center justify-center rounded-full bg-purple-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-purple-800 hover:shadow-lg lg:inline-flex"
+            >
+              Book Session
+            </Link>
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
-              className="md:hidden flex flex-col gap-1.5 p-2"
+              className="flex flex-col gap-1.5 p-2 lg:hidden"
               aria-label="Toggle menu"
               aria-expanded={isMobileMenuOpen}
               suppressHydrationWarning
@@ -173,7 +185,7 @@ const Navbar = ({ onLogout }: NavbarProps) => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div
-            className="mt-4 border-t border-white/25 pb-4 md:hidden"
+            className="mt-4 border-t border-white/25 pb-4 lg:hidden"
             suppressHydrationWarning
           >
             <div className="space-y-2">
@@ -192,6 +204,13 @@ const Navbar = ({ onLogout }: NavbarProps) => {
                 About
               </Link>
               <Link
+                href="/services"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block rounded-lg px-4 py-3 font-medium text-[#34213f] hover:bg-white/15 transition-colors"
+              >
+                Services
+              </Link>
+              <Link
                 href="/blogs"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block rounded-lg px-4 py-3 font-medium text-[#34213f] hover:bg-white/15 transition-colors"
@@ -204,6 +223,13 @@ const Navbar = ({ onLogout }: NavbarProps) => {
                 className="block rounded-lg px-4 py-3 font-medium text-[#34213f] hover:bg-white/15 transition-colors"
               >
                 Reviews
+              </Link>
+              <Link
+                href="/book-session"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="mt-3 flex min-h-12 items-center justify-center rounded-full bg-purple-700 px-5 py-3 font-semibold text-white transition-colors hover:bg-purple-800"
+              >
+                Book Session
               </Link>
             </div>
           </div>

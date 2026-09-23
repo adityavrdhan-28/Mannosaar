@@ -42,7 +42,7 @@ const MentalLoadSection = () => {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#5b267a]">A thought to hold onto</p>
             <blockquote className="mx-auto mt-4 max-w-xl font-playfair text-2xl font-bold leading-snug text-[#34213f] sm:text-3xl">“{selected.quote}”</blockquote>
             <p className="mx-auto mt-5 max-w-lg text-sm leading-7 text-[#4c4052]">You do not have to carry this alone. A professional conversation can help you find steadier ground.</p>
-            <Link href="/appointment/type" className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#5b267a] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#481d61]">
+            <Link href="/book-session" className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#5b267a] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#481d61]">
               Book a session <ArrowRight size={16} />
             </Link>
           </motion.div>}

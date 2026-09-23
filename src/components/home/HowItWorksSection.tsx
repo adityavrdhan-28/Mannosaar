@@ -64,7 +64,7 @@ const HowItWorksSection = () => (
           })}
         </ol>
 
-        <Link href="/appointment/type" className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#5b267a] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#481d61]">
+        <Link href="/book-session" className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#5b267a] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#481d61]">
           Book a session <ArrowRight size={16} />
         </Link>
       </motion.div>

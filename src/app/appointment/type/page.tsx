@@ -6,28 +6,30 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import TherapistHeader from '@/components/booking/TherapistHeader';
+import {
+  BOOKABLE_SERVICES,
+  DEFAULT_BUNDLE_PRICING,
+  formatInr,
+  type BundlePricing,
+  type ServiceId,
+} from '@/lib/services';
 
-interface BundlePricing {
-  personal_1: number;
-  personal_2: number;
-  personal_3: number;
-  couple_1: number;
-  couple_2: number;
-  couple_3: number;
-}
+const serviceDetails = {
+  personal: {
+    icon: '👤',
+    features: ['Individual focus', 'Private online setting'],
+  },
+  couple: {
+    icon: '👥',
+    features: ['Relationship focus', 'Shared online setting'],
+  },
+};
 
 export default function AppointmentTypePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [isReady, setIsReady] = useState(false);
-  const [pricing, setPricing] = useState<BundlePricing>({
-    personal_1: 2500,
-    personal_2: 4500,
-    personal_3: 6000,
-    couple_1: 3500,
-    couple_2: 6500,
-    couple_3: 9000,
-  });
+  const [pricing, setPricing] = useState<BundlePricing>({ ...DEFAULT_BUNDLE_PRICING });
   const [loadingPrices, setLoadingPrices] = useState(true);
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function AppointmentTypePage() {
     }
   }, [session, status, router]);
 
-  const handleSelectType = (type: 'personal' | 'couple') => {
+  const handleSelectType = (type: ServiceId) => {
     router.push(`/appointment/note?type=${type}`);
   };
 
@@ -124,91 +126,49 @@ export default function AppointmentTypePage() {
               animate="visible"
               className="grid md:grid-cols-2 gap-8 mb-12"
             >
-              <motion.div
-                variants={itemVariants}
-                whileHover={{ scale: 1.02, y: -5 }}
-                className="bg-white rounded-2xl shadow-lg p-8 cursor-pointer border-2 border-transparent hover:border-purple-300 transition-all"
-                onClick={() => handleSelectType('personal')}
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="text-5xl">👤</div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-500 mb-1">Starting from</p>
-                    <p className="text-2xl font-bold text-purple-600">
-                      ₹{loadingPrices ? '...' : pricing.personal_1}
-                    </p>
-                  </div>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Personal Session</h2>
-                <p className="text-gray-600 mb-6">
-                  One-on-one therapy session tailored specifically to your individual needs and
-                  concerns.
-                </p>
-                <ul className="space-y-3 text-gray-700 mb-8">
-                  <li className="flex items-center">
-                    <span className="mr-3">✓</span>
-                    <span>Individual focus</span>
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-3">✓</span>
-                    <span>Personalized treatment plan</span>
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-3">✓</span>
-                    <span>Complete confidentiality</span>
-                  </li>
-                </ul>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-purple-400 to-purple-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
-                >
-                  Continue
-                </motion.button>
-              </motion.div>
+              {BOOKABLE_SERVICES.map((service) => {
+                const details = serviceDetails[service.id];
+                const price = pricing[`${service.id}_1`];
 
-              <motion.div
-                variants={itemVariants}
-                whileHover={{ scale: 1.02, y: -5 }}
-                className="bg-white rounded-2xl shadow-lg p-8 cursor-pointer border-2 border-transparent hover:border-purple-300 transition-all"
-                onClick={() => handleSelectType('couple')}
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="text-5xl">👥</div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-500 mb-1">Starting from</p>
-                    <p className="text-2xl font-bold text-purple-600">
-                      ₹{loadingPrices ? '...' : pricing.couple_1}
-                    </p>
-                  </div>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Couple Session</h2>
-                <p className="text-gray-600 mb-6">
-                  Joint therapy session for couples looking to strengthen their relationship and
-                  communication.
-                </p>
-                <ul className="space-y-3 text-gray-700 mb-8">
-                  <li className="flex items-center">
-                    <span className="mr-3">✓</span>
-                    <span>Couples therapy</span>
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-3">✓</span>
-                    <span>Relationship counseling</span>
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-3">✓</span>
-                    <span>Shared growth & harmony</span>
-                  </li>
-                </ul>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-purple-400 to-purple-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
-                >
-                  Continue
-                </motion.button>
-              </motion.div>
+                return (
+                  <motion.div
+                    key={service.id}
+                    variants={itemVariants}
+                    whileHover={{ scale: 1.02, y: -5 }}
+                    className="bg-white rounded-2xl shadow-lg p-8 border-2 border-transparent hover:border-purple-300 transition-all"
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="text-5xl" aria-hidden="true">{details.icon}</div>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500 mb-1">Per session</p>
+                        <p className="text-2xl font-bold text-purple-600">
+                          {loadingPrices ? '...' : formatInr(price)}
+                        </p>
+                      </div>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">{service.name}</h2>
+                    <p className="text-gray-600 mb-6">{service.description}</p>
+                    <ul className="space-y-3 text-gray-700 mb-8">
+                      {[...details.features, `${service.durationMinutes} minutes`].map((feature) => (
+                        <li key={feature} className="flex items-center">
+                          <span className="mr-3" aria-hidden="true">✓</span>
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleSelectType(service.id)}
+                      aria-label={`Continue with ${service.name}`}
+                      className="w-full px-6 py-3 bg-gradient-to-r from-purple-400 to-purple-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                    >
+                      Continue
+                    </motion.button>
+                  </motion.div>
+                );
+              })}
             </motion.div>
 
             <div className="text-center">

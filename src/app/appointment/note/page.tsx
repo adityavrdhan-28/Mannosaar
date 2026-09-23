@@ -5,32 +5,25 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { Suspense } from 'react';
-
-interface BundlePricing {
-  personal_1: number;
-  personal_2: number;
-  personal_3: number;
-  couple_1: number;
-  couple_2: number;
-  couple_3: number;
-}
+import Link from 'next/link';
+import {
+  DEFAULT_BUNDLE_PRICING,
+  getServiceById,
+  isServiceId,
+  type BundlePricing,
+} from '@/lib/services';
 
 function AppointmentNotePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
-  const sessionType = (searchParams.get('type') || 'personal') as 'personal' | 'couple';
+  const requestedType = searchParams.get('type');
+  const sessionType = isServiceId(requestedType) ? requestedType : 'personal';
+  const selectedService = getServiceById(sessionType)!;
 
   const [isReady, setIsReady] = useState(false);
   const [loadingPrices, setLoadingPrices] = useState(true);
-  const [pricing, setPricing] = useState<BundlePricing>({
-    personal_1: 2500,
-    personal_2: 4500,
-    personal_3: 6000,
-    couple_1: 3500,
-    couple_2: 6500,
-    couple_3: 9000,
-  });
+  const [pricing, setPricing] = useState<BundlePricing>({ ...DEFAULT_BUNDLE_PRICING });
   const [note, setNote] = useState('');
   const [bundleSize, setBundleSize] = useState<1 | 2 | 3>(1);
 
@@ -135,6 +128,12 @@ function AppointmentNotePageContent() {
             </h1>
             <p className="mx-auto max-w-xl text-base text-gray-600 sm:text-lg">
               A few words help us prepare for your session. Share only what feels comfortable.
+            </p>
+            <p className="text-sm font-semibold text-[#5b267a]">
+              Selected: {selectedService.name} ·{' '}
+              <Link href="/appointment/type" className="underline decoration-[#5b267a]/35 underline-offset-4 hover:text-[#3f165b]">
+                Change session
+              </Link>
             </p>
           </div>
 

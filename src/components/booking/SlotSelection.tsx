@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { format, addDays, addMonths, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { getServiceById } from '@/lib/services';
 
 interface Slot {
   id: string;
@@ -55,6 +56,7 @@ const SlotSelection = ({ sessionType = 'personal', bundleSize = 1 }: SlotSelecti
 
   // Override with URL params if provided
   const typeParam = searchParams.get('type') || sessionType;
+  const selectedService = getServiceById(typeParam) || getServiceById('personal')!;
   const bundleParam = searchParams.get('bundle') ? parseInt(searchParams.get('bundle')!) : bundleSize;
 
   const [selectedSessions, setSelectedSessions] = useState<SessionSelection[]>([]);
@@ -490,7 +492,7 @@ const SlotSelection = ({ sessionType = 'personal', bundleSize = 1 }: SlotSelecti
                               ? 'border-purple-600 bg-purple-600 text-white'
                               : 'border-gray-200 bg-gray-100 text-gray-600'
                           }`}>
-                            40 mins
+                            {selectedService.durationMinutes} mins
                           </div>
                         </div>
                         <div className="mt-3 text-sm text-gray-600">
